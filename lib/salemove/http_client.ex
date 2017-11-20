@@ -3,7 +3,21 @@ defmodule Salemove.HttpClient do
   Generic HTTP client built on top of Tesla and used to build specific JSON API HTTP clients
   with ability to configure them during runtime, using, for example, environment variables.
 
-  Configuration options:
+  ## Example
+
+      defmodule Github do
+        use Salemove.HttpClient, base_url: "https://api.github.com/"
+
+        def user_repos(login, opts \\ []) do
+          get("/user/" <> login <> "/repos", opts)
+        end
+      end
+
+      Github.user_repos("take-five")
+
+  ## Configuration options
+
+  There are number of available configuration options:
 
     * `:base_url` - Base URL of service (including schema, i.e. `https://api.github.com/`)
     * `:adapter` - HTTP Adapter module, defaults to `Tesla.Adapter.Hackney`
@@ -15,15 +29,22 @@ defmodule Salemove.HttpClient do
     * `:password` - see `:username`.
     * `:debug` - Turn on/off verbose request/response logging, defaults to `false`
 
-  ## Example
+  HTTP client can be configured at runtime and at compile time via configuration files. Note,
+  that you can use `{:system, env_name}` tuples to configure the client
 
-      defmodule Github do
-        use #{__MODULE__}, base_url: "https://api.github.com/"
+  ### Configuration via request options
 
-        def user_repos(login) do
-          get("/user/" <> login <> "/repos")
-        end
-      end
+  You can pass additional `Keyword` argument to request functions:
+
+      Github.user_repos("take-five", adapter: :mock, base_url: "http://mocked-gh/")
+
+  ### Configuration via config files
+
+  In `config/config.exs`:
+
+      config :salemove_http_client,
+        adapter: :mock,
+        base_url: "http://mocked-gh/"
   """
 
   @http_verbs ~w(head get delete trace options post put patch)a
@@ -51,7 +72,7 @@ defmodule Salemove.HttpClient do
     end
   end
 
-  @default_options [
+  @hardcoded_defaults [
     adapter: Tesla.Adapter.Hackney,
     adapter_options: [
       connect_timeout: 1500,
@@ -59,6 +80,7 @@ defmodule Salemove.HttpClient do
     ],
     debug: false
   ]
+  @application_defaults Keyword.merge(@hardcoded_defaults, Application.get_all_env(:salemove_http_client) || [])
 
   use Tesla,
     # don't generate GET/POST/... functions for HttpClient module
@@ -88,7 +110,7 @@ defmodule Salemove.HttpClient do
   end
 
   defp build_client(options) do
-    @default_options
+    @application_defaults
     |> Keyword.merge(options)
     |> Confex.Resolver.resolve!()
     |> build_stack()
