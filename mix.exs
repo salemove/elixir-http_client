@@ -4,13 +4,16 @@ defmodule Salemove.HttpClient.Mixfile do
   def project do
     [
       app: :salemove_http_client,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.4",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      description: description()
+      description: description(),
+      docs: [
+        main: "Salemove.HttpClient"
+      ]
     ]
   end
 

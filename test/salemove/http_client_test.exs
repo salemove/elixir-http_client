@@ -8,8 +8,7 @@ defmodule Salemove.HttpClientTest do
       base_url: "http://test-api/",
       headers: %{"X-Custom-Header" => "A value"},
       username: "user",
-      password: "pass",
-      adapter: :mock
+      password: "pass"
   end
 
   describe "sending HTTP request" do
