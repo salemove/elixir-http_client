@@ -13,6 +13,10 @@ defmodule Salemove.HttpClient.Mixfile do
       description: description(),
       docs: [
         main: "Salemove.HttpClient"
+      ],
+      dialyzer: [
+        plt_add_apps: [:ex_unit],
+        flags: [:error_handling, :race_conditions, :underspecs]
       ]
     ]
   end
@@ -47,7 +51,8 @@ defmodule Salemove.HttpClient.Mixfile do
       {:poison, "~> 1.0 or ~> 2.0 or ~> 3.0"},
       {:hackney, ">= 0.0.0", only: :dev},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false}
     ]
   end
 end

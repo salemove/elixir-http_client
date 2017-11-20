@@ -8,7 +8,6 @@ defmodule Salemove.HttpClient.Decoder do
   alias Salemove.HttpClient.Response
   alias Salemove.HttpClient.JSONError
   alias Salemove.HttpClient.ConnectionError
-  alias Salemove.HttpClient.InvalidResponseError
   alias Salemove.HttpClient.UnexpectedRedirectError
   alias Salemove.HttpClient.ClientError
   alias Salemove.HttpClient.ServerError
@@ -16,7 +15,15 @@ defmodule Salemove.HttpClient.Decoder do
   alias Salemove.HttpClient.UnsupportedProtocolError
 
   @type tesla_result :: {:ok, Tesla.Env.t()} | {:error, %Tesla.Error{}}
-  @type on_decode :: {:ok, Response.t()} | {:error, InvalidResponseError.t()}
+  @type on_decode :: {:ok, Response.t()} | {:error, reason}
+  @type reason ::
+          JSONError.t()
+          | ConnectionError.t()
+          | UnexpectedRedirectError.t()
+          | ClientError.t()
+          | ServerError.t()
+          | UnavailableError.t()
+          | UnsupportedProtocolError.t()
 
   @doc """
   Accepts result of request to `Tesla` client and constructs

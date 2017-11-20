@@ -2,12 +2,24 @@ defmodule Salemove.HttpClient.ConnectionError do
   @moduledoc "Indicates error on transport level"
 
   defexception [:message, :reason]
+
+  @type t :: %__MODULE__{
+          __exception__: true,
+          message: String.t(),
+          reason: any
+        }
 end
 
 defmodule Salemove.HttpClient.JSONError do
   @moduledoc "An error that occurs when request/response body is not valid JSON"
 
   defexception [:message, :reason]
+
+  @type t :: %__MODULE__{
+          __exception__: true,
+          message: String.t(),
+          reason: any
+        }
 end
 
 defmodule Salemove.HttpClient.InvalidResponseError do
@@ -23,12 +35,18 @@ defmodule Salemove.HttpClient.InvalidResponseError do
 
   defmacro __using__(message) do
     quote do
-      alias Salemove.HttpClient.InvalidResponseError
+      @type t :: %__MODULE__{
+              __exception__: true,
+              message: String.t(),
+              status: Tesla.Env.status(),
+              body: Tesla.Env.body(),
+              headers: Tesla.Env.headers()
+            }
 
       defexception [:message, :status, :body, :headers]
 
       @doc "Create a new #{__MODULE__} struct from Tesla.Env"
-      @spec new(Tesla.Env.t()) :: InvalidResponseError.t()
+      @spec new(Tesla.Env.t()) :: t
       def new(%Tesla.Env{} = env) do
         struct(%__MODULE__{message: unquote(message)}, Map.from_struct(env))
       end
