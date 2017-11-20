@@ -10,7 +10,10 @@ defmodule Salemove.HttpClient.Mixfile do
       build_embedded: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      description: description()
+      description: description(),
+      docs: [
+        main: "Salemove.HttpClient"
+      ]
     ]
   end
 
