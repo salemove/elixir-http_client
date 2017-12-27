@@ -23,6 +23,7 @@ defmodule Salemove.HttpClient do
     * `:adapter` - HTTP Adapter module, defaults to `Tesla.Adapter.Hackney`
     * `:adapter_options` - adapter specific options, see documentation for concrete adapter
     * `:json` - JSON encoding/decoding options. See `Tesla.Middleware.JSON`.
+    * `:retry` - Retry few times in case of connection refused error. See `Tesla.Middleware.Retry`.
     * `:stats` - StatsD instrumenting options. See `Tesla.StatsD` for more details.
     * `:username` - along with `:password` option adds basic authentication to all requests.
       See `Tesla.Middleware.BasicAuth`.
@@ -78,7 +79,8 @@ defmodule Salemove.HttpClient do
       connect_timeout: 1500,
       recv_timeout: 4500
     ],
-    debug: false
+    debug: false,
+    retry: false
   ]
   @application_defaults Keyword.merge(@hardcoded_defaults, Application.get_all_env(:salemove_http_client) || [])
 
@@ -120,13 +122,14 @@ defmodule Salemove.HttpClient do
   defp build_stack(options) do
     []
     |> push_middleware(Tesla.Middleware.Tuples)
+    |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]})
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
     |> push_middleware({Tesla.Middleware.JSON, options[:json]})
     |> push_middleware(
-         {Tesla.Middleware.BasicAuth, options},
-         if: options[:username] && options[:password]
-       )
+      {Tesla.Middleware.BasicAuth, options},
+      if: options[:username] && options[:password]
+    )
     |> push_middleware(Tesla.Middleware.Logger)
     |> push_middleware(Tesla.Middleware.DebugLogger, if: options[:debug])
     |> push_middleware({__MODULE__.Adapter, options})

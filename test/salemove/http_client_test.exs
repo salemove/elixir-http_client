@@ -80,6 +80,16 @@ defmodule Salemove.HttpClientTest do
   describe "catching connection errors" do
     alias HttpClient.ConnectionError
 
+    defmodule Counter do
+      def start_link do
+        Agent.start_link(fn -> 0 end)
+      end
+
+      def get_and_increment(counter) do
+        Agent.get_and_update(counter, fn current -> {current, current + 1} end)
+      end
+    end
+
     @tag capture_log: true
     test "returns {:error, %ConnectionError{}} when adapter throws an error" do
       error_message = "Adapter error (econnrefused)"
@@ -92,6 +102,36 @@ defmodule Salemove.HttpClientTest do
 
       assert {:error, error} = TestClient.get("/test")
       assert %ConnectionError{message: ^error_message, reason: ^error_reason} = error
+    end
+
+    @tag capture_log: true
+    test "retries if connection was refused and `:retry` option is on" do
+      {:ok, counter} = Counter.start_link()
+
+      error_message = "Adapter error (econnrefused)"
+      error_reason = :econnrefused
+      exception = %Tesla.Error{message: error_message, reason: error_reason}
+
+      normal_response = %{"response" => "value"}
+
+      self_pid = self()
+
+      allow_http_request(fn env ->
+        if Counter.get_and_increment(counter) > 1 do
+          env
+          |> status(200)
+          |> json(normal_response)
+        else
+          send(self_pid, :connection_refused_received)
+
+          raise exception
+        end
+      end)
+
+      assert {:ok, %{body: ^normal_response}} = TestClient.get("/", retry: [delay: 10])
+
+      assert_received :connection_refused_received
+      assert_received :connection_refused_received
     end
   end
 
