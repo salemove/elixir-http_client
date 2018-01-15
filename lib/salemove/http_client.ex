@@ -22,7 +22,8 @@ defmodule Salemove.HttpClient do
     * `:base_url` - Base URL of service (including schema, i.e. `https://api.github.com/`)
     * `:adapter` - HTTP Adapter module, defaults to `Tesla.Adapter.Hackney`
     * `:adapter_options` - adapter specific options, see documentation for concrete adapter
-    * `:json` - JSON encoding/decoding options. See `Tesla.Middleware.JSON`.
+    * `:json` - JSON encoding/decoding options. If omitted, default options are used - see `Tesla.Middleware.JSON`.
+      If set to `false`, request body is sent as application/x-www-form-urlencoded not JSON.
     * `:retry` - Retry few times in case of connection refused error. See `Tesla.Middleware.Retry`.
     * `:stats` - StatsD instrumenting options. See `Tesla.StatsD` for more details.
     * `:username` - along with `:password` option adds basic authentication to all requests.
@@ -120,12 +121,16 @@ defmodule Salemove.HttpClient do
   end
 
   defp build_stack(options) do
+    encode_json_enabled = Keyword.get(options, :json, true)
+
     []
     |> push_middleware(Tesla.Middleware.Tuples)
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]})
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
-    |> push_middleware({Tesla.Middleware.JSON, options[:json]})
+    |> push_middleware(Tesla.Middleware.FormUrlencoded, if: !encode_json_enabled)
+    |> push_middleware({Tesla.Middleware.EncodeJson, options[:json]}, if: encode_json_enabled)
+    |> push_middleware({Tesla.Middleware.DecodeJson, options[:json]})
     |> push_middleware(
       {Tesla.Middleware.BasicAuth, options},
       if: options[:username] && options[:password]
