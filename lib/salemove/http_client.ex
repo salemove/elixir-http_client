@@ -29,6 +29,7 @@ defmodule Salemove.HttpClient do
     * `:username` - along with `:password` option adds basic authentication to all requests.
       See `Tesla.Middleware.BasicAuth`.
     * `:password` - see `:username`.
+    * `:log` - Logging options, see `Salemove.HttpClient.Middleware.Logger`
     * `:debug` - Turn on/off verbose request/response logging, defaults to `false`
 
   HTTP client can be configured at runtime and at compile time via configuration files. Note,
@@ -135,7 +136,7 @@ defmodule Salemove.HttpClient do
       {Tesla.Middleware.BasicAuth, options},
       if: options[:username] && options[:password]
     )
-    |> push_middleware(Tesla.Middleware.Logger)
+    |> push_middleware({Salemove.HttpClient.Middleware.Logger, options[:log]})
     |> push_middleware(Tesla.Middleware.DebugLogger, if: options[:debug])
     |> push_middleware({__MODULE__.Adapter, options})
     |> Enum.reverse()
