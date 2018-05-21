@@ -88,8 +88,8 @@ defmodule Salemove.HttpClient.Middleware.Logger do
   end
 
   defp find_matching_level(levels, status) do
-    Enum.find(levels, fn
-      {%Range{} = range, level} -> if level in range, do: level
+    Enum.find_value(levels, fn
+      {%Range{} = range, level} -> if status in range, do: level
       {^status, level} -> level
       _ -> false
     end)

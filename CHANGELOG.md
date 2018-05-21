@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.6
+
+  * Bug fixes
+    * Fix ignored log level setting when supplied as range (#8)
+
 ## v0.1.5
 
   * Enhancements
