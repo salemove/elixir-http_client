@@ -7,7 +7,8 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
     plug(
       Salemove.HttpClient.Middleware.Logger,
       level: %{
-        422 => :info
+        422 => :info,
+        (410..418) => :warn
       }
     )
 
@@ -22,6 +23,9 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
 
           "/client-error" ->
             {404, "error"}
+
+          "/teapot" ->
+            {418, "i am a teapot"}
 
           "/unprocessable-entity" ->
             {422, "error"}
@@ -66,6 +70,12 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
     log = capture_log(fn -> Client.get("/unprocessable-entity") end)
     assert log =~ "/unprocessable-entity -> 422"
     assert log =~ "info"
+  end
+
+  test "client error with custom log level option supplied as range" do
+    log = capture_log(fn -> Client.get("/teapot") end)
+    assert log =~ "/teapot -> 418"
+    assert log =~ "warn"
   end
 
   test "redirect" do
