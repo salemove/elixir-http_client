@@ -49,10 +49,10 @@ defmodule Salemove.HttpClient.Mixfile do
       {:tesla_statsd, "~> 0.1"},
       {:confex, "~> 3.0"},
       {:poison, "~> 1.0 or ~> 2.0 or ~> 3.0"},
-      {:hackney, ">= 0.0.0", only: :dev},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:dialyxir, "~> 0.5", only: :dev, runtime: false}
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false},
+      {:tesla_middleware_tapper, "~> 0.1", optional: true}
     ]
   end
 end
