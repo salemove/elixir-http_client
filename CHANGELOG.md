@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.0
+
+  * Enhancements
+    * Add Tapper middleware (#9)
+
 ## v0.1.6
 
   * Bug fixes

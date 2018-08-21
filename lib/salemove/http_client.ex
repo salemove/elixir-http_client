@@ -138,8 +138,17 @@ defmodule Salemove.HttpClient do
     )
     |> push_middleware({Salemove.HttpClient.Middleware.Logger, options[:log]})
     |> push_middleware(Tesla.Middleware.DebugLogger, if: options[:debug])
+    |> push_middleware(Tesla.Middleware.Tapper, if: tapper_enabled?(options))
     |> push_middleware({__MODULE__.Adapter, options})
     |> Enum.reverse()
+  end
+
+  if Code.ensure_loaded?(Tesla.Middleware.Tapper) do
+    defp tapper_enabled?(options) do
+      Keyword.get(options, :tapper, true)
+    end
+  else
+    defp tapper_enabled?(_), do: false
   end
 
   defp push_middleware(stack, middleware, [if: condition] \\ [if: true]) do

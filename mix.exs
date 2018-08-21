@@ -4,7 +4,7 @@ defmodule Salemove.HttpClient.Mixfile do
   def project do
     [
       app: :salemove_http_client,
-      version: "0.1.6",
+      version: "0.2.0",
       elixir: "~> 1.4",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
@@ -49,10 +49,10 @@ defmodule Salemove.HttpClient.Mixfile do
       {:tesla_statsd, "~> 0.1"},
       {:confex, "~> 3.0"},
       {:poison, "~> 1.0 or ~> 2.0 or ~> 3.0"},
-      {:hackney, ">= 0.0.0", only: :dev},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:dialyxir, "~> 0.5", only: :dev, runtime: false}
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false},
+      {:tesla_middleware_tapper, "~> 0.1", optional: true}
     ]
   end
 end
