@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.1
+
+  * Enhancement
+    * Added support for Elixir 1.8+
+
 ## v0.2.0
 
   * Enhancements
