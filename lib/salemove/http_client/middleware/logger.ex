@@ -60,7 +60,7 @@ defmodule Salemove.HttpClient.Middleware.Logger do
 
   defp elapsed_ms(from) do
     now = System.monotonic_time()
-    us = System.convert_time_unit(now - from, :native, :microseconds)
+    us = System.convert_time_unit(now - from, :native, :microsecond)
     :io_lib.format("~.3f", [us / 1000])
   end
 
