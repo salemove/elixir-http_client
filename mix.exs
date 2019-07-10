@@ -5,7 +5,7 @@ defmodule Salemove.HttpClient.Mixfile do
     [
       app: :salemove_http_client,
       version: "0.2.1",
-      elixir: "~> 1.4",
+      elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
       deps: deps(),
@@ -45,14 +45,17 @@ defmodule Salemove.HttpClient.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 0.9"},
-      {:tesla_statsd, "~> 0.1"},
+      {:tesla, "~> 1.0"},
+      {:tesla_statsd, "~> 0.3.0"},
       {:confex, "~> 3.0"},
       {:poison, "~> 1.0 or ~> 2.0 or ~> 3.0"},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:tesla_middleware_tapper, "~> 0.1", optional: true}
+      {:tesla_middleware_tapper,
+       git: "https://github.com/salemove/elixir-tesla_middleware_tapper.git",
+       ref: "23780c78101bc34137d5938161b60f7c854500dd",
+       optional: true}
     ]
   end
 end
