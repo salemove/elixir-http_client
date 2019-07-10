@@ -125,7 +125,6 @@ defmodule Salemove.HttpClient do
     encode_json_enabled = Keyword.get(options, :json, true)
 
     []
-    |> push_middleware(Tesla.Middleware.Tuples)
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]})
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
