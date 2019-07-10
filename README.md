@@ -24,9 +24,8 @@ Documentation can be found at [https://hexdocs.pm/salemove_http_client](https://
 
 ```elixir
 defmodule GihubClient do
-  use Salemove.HttpClient, 
-      base_url: "https://api.github.com/",
-      debug: Mix.env == :dev
+  use Salemove.HttpClient,
+      base_url: "https://api.github.com/"
 end
 ```
 
