@@ -97,7 +97,7 @@ defmodule Salemove.HttpClientCase do
   Add arbitrary header to the mocked response
   """
   def header(%Tesla.Env{} = env, name, value) do
-    put_in(env.headers[name], value)
+    Tesla.put_header(env, name, value)
   end
 
   defp notify_calling_process(env) do

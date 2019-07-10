@@ -6,7 +6,7 @@ defmodule Salemove.HttpClientTest do
   defmodule TestClient do
     use Salemove.HttpClient,
       base_url: "http://test-api/",
-      headers: %{"X-Custom-Header" => "A value"},
+      headers: [{"X-Custom-Header", "A value"}],
       username: "user",
       password: "pass"
   end
@@ -48,8 +48,8 @@ defmodule Salemove.HttpClientTest do
       assert {:ok, %{body: ^response}} = apply(TestClient, verb, ["/test"])
       assert_requested(env)
 
-      assert %{"x-custom-header" => "A value"} = env.headers
-      assert %{"authorization" => "Basic " <> auth} = env.headers
+      assert "A value" = Tesla.get_header(env, "X-Custom-Header")
+      assert "Basic " <> auth = Tesla.get_header(env, "authorization")
       assert auth == Base.encode64("user:pass")
       assert env.url == "http://test-api/test"
       assert env.method == verb
@@ -68,9 +68,10 @@ defmodule Salemove.HttpClientTest do
       assert {:ok, %{body: ^response}} = apply(TestClient, verb, ["/test", request])
       assert_requested(env)
 
-      assert %{"x-custom-header" => "A value"} = env.headers
+      assert "A value" = Tesla.get_header(env, "X-Custom-Header")
+      assert "Basic " <> auth = Tesla.get_header(env, "authorization")
+
       assert env.url == "http://test-api/test"
-      assert %{"authorization" => "Basic " <> auth} = env.headers
       assert auth == Base.encode64("user:pass")
       assert env.method == verb
       assert env.body == Poison.encode!(request)
