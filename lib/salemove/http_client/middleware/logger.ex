@@ -32,20 +32,22 @@ defmodule Salemove.HttpClient.Middleware.Logger do
   def call(env, next, opts) do
     time_start = System.monotonic_time()
 
-    try do
-      env = Tesla.run(env, next)
+    with {:ok, env} <- Tesla.run(env, next) do
       _ = log(env, elapsed_ms(time_start), opts)
-      env
-    rescue
-      ex in Tesla.Error ->
-        stacktrace = System.stacktrace()
+
+      {:ok, env}
+    else
+      {:error, %Tesla.Error{} = ex} ->
         _ = log(env, ex, elapsed_ms(time_start), opts)
-        reraise ex, stacktrace
+        {:error, ex}
+
+      {:error, error} ->
+        {:error, error}
     end
   end
 
-  defp log(env, %Tesla.Error{message: message}, elapsed_ms, opts) do
-    log_status(0, "#{normalize_method(env)} #{env.url} -> #{message} (#{elapsed_ms} ms)", opts)
+  defp log(env, %Tesla.Error{reason: reason}, elapsed_ms, opts) do
+    log_status(0, "#{normalize_method(env)} #{env.url} -> #{inspect(reason)} (#{elapsed_ms} ms)", opts)
   end
 
   defp log(env, elapsed_ms, opts) do

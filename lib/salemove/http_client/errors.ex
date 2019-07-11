@@ -1,13 +1,16 @@
 defmodule Salemove.HttpClient.ConnectionError do
   @moduledoc "Indicates error on transport level"
 
-  defexception [:message, :reason]
+  defexception [:reason]
 
   @type t :: %__MODULE__{
           __exception__: true,
-          message: String.t(),
           reason: any
         }
+
+  def message(%__MODULE__{reason: reason}) do
+    inspect(reason)
+  end
 end
 
 defmodule Salemove.HttpClient.JSONError do

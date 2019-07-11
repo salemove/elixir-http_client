@@ -57,7 +57,7 @@ defmodule Salemove.HttpClient.Decoder do
     {:error, %JSONError{message: message, reason: reason}}
   end
 
-  defp decode_error(%Tesla.Error{message: message, reason: reason}) do
-    {:error, %ConnectionError{message: message, reason: reason}}
+  defp decode_error(%Tesla.Error{reason: reason}) do
+    {:error, %ConnectionError{reason: reason}}
   end
 end
