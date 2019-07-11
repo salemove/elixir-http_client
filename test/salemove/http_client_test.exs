@@ -168,7 +168,7 @@ defmodule Salemove.HttpClientTest do
         env
         |> status(200)
         |> body("{asdf")
-        |> header("Content-Type", "application/json")
+        |> header("content-type", "application/json")
       end)
 
       assert {:error, %JSONError{}} = TestClient.get("/test")
