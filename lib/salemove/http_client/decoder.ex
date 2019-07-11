@@ -40,6 +40,10 @@ defmodule Salemove.HttpClient.Decoder do
     decode_error(error)
   end
 
+  def decode({:error, {Tesla.Middleware.JSON, :decode, %Jason.DecodeError{} = error}}) do
+    decode_error(error)
+  end
+
   ##
 
   defp decode_env(%{status: status} = env) do
@@ -53,8 +57,8 @@ defmodule Salemove.HttpClient.Decoder do
     end
   end
 
-  defp decode_error(%Tesla.Error{message: "JSON " <> _ = message, reason: reason}) do
-    {:error, %JSONError{message: message, reason: reason}}
+  defp decode_error(%Jason.DecodeError{} = error) do
+    {:error, %JSONError{reason: Exception.message(error)}}
   end
 
   defp decode_error(%Tesla.Error{reason: reason}) do

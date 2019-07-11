@@ -48,14 +48,14 @@ defmodule Salemove.HttpClient.Mixfile do
       {:tesla, "~> 1.0"},
       {:tesla_statsd, "~> 0.3.0"},
       {:confex, "~> 3.0"},
-      {:poison, "~> 1.0 or ~> 2.0 or ~> 3.0"},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
       {:tesla_middleware_tapper,
        git: "https://github.com/salemove/elixir-tesla_middleware_tapper.git",
        ref: "23780c78101bc34137d5938161b60f7c854500dd",
-       optional: true}
+       optional: true},
+      {:jason, "~> 1.1"}
     ]
   end
 end

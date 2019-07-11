@@ -74,7 +74,7 @@ defmodule Salemove.HttpClientTest do
       assert env.url == "http://test-api/test"
       assert auth == Base.encode64("user:pass")
       assert env.method == verb
-      assert env.body == Poison.encode!(request)
+      assert env.body == Jason.encode!(request)
     end
   end
 

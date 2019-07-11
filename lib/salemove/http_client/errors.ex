@@ -20,9 +20,12 @@ defmodule Salemove.HttpClient.JSONError do
 
   @type t :: %__MODULE__{
           __exception__: true,
-          message: String.t(),
           reason: any
         }
+
+  def message(%__MODULE__{reason: reason}) do
+    reason
+  end
 end
 
 defmodule Salemove.HttpClient.InvalidResponseError do

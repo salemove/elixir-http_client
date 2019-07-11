@@ -90,7 +90,7 @@ defmodule Salemove.HttpClientCase do
   def json(%Tesla.Env{} = env, body) do
     env
     |> header("content-type", "application/json")
-    |> body(Poison.encode!(body))
+    |> body(Jason.encode!(body))
   end
 
   @doc """
