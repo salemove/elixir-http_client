@@ -12,7 +12,7 @@ defmodule Salemove.HttpClientCase do
 
       config :my_app, GithubClient,
         base_url: "https://api.github.com/",
-        adapter: :mock
+        adapter: Tesla.Mock
 
       defmodule GithubClient do
         use Salemove.HttpClient, Application.get_env(:my_app, __MODULE__)

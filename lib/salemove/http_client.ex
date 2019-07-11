@@ -38,14 +38,14 @@ defmodule Salemove.HttpClient do
 
   You can pass additional `Keyword` argument to request functions:
 
-      Github.user_repos("take-five", adapter: :mock, base_url: "http://mocked-gh/")
+      Github.user_repos("take-five", adapter: Tesla.Mock, base_url: "http://mocked-gh/")
 
   ### Configuration via config files
 
   In `config/config.exs`:
 
       config :salemove_http_client,
-        adapter: :mock,
+        adapter: Tesla.Mock,
         base_url: "http://mocked-gh/"
   """
 

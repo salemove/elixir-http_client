@@ -4,4 +4,4 @@ use Mix.Config
 
 config :logger, level: :warn
 
-config :salemove_http_client, adapter: :mock
+config :salemove_http_client, adapter: Tesla.Mock
