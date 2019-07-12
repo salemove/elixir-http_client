@@ -116,7 +116,7 @@ defmodule Salemove.HttpClient do
     |> Keyword.merge(options)
     |> Confex.Resolver.resolve!()
     |> build_stack()
-    |> Tesla.build_client()
+    |> Tesla.client()
   end
 
   defp build_stack(options) do
