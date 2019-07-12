@@ -45,7 +45,13 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   import ExUnit.CaptureLog
 
   setup do
+    level_before = Logger.level()
+
     Logger.configure(level: :info)
+
+    on_exit(fn ->
+      Logger.configure(level: level_before)
+    end)
   end
 
   test "connection error" do
