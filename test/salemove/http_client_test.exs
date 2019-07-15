@@ -6,7 +6,7 @@ defmodule Salemove.HttpClientTest do
   defmodule TestClient do
     use Salemove.HttpClient,
       base_url: "http://test-api/",
-      headers: [{"X-Custom-Header", "A value"}],
+      headers: %{"X-Custom-Header" => "A value"},
       username: "user",
       password: "pass"
   end
