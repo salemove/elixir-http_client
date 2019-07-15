@@ -5,7 +5,7 @@ defmodule Salemove.HttpClient.Adapter do
 
   ## Example
 
-      Salemove.HttpClient.request(url: "http://www.google.com/", method: :get, adapter: :hackney)
+      Salemove.HttpClient.request(url: "http://www.google.com/", method: :get, adapter: Tesla.Adapter.Hackney)
   """
 
   @doc false
@@ -20,7 +20,7 @@ defmodule Salemove.HttpClient.Adapter do
   @doc false
   # executed as adapter
   def call(%{opts: opts} = env, _opts) do
-    adapter = opts |> Keyword.fetch!(:__adapter) |> Tesla.alias()
+    adapter = Keyword.fetch!(opts, :__adapter)
     adapter_options = Keyword.get(opts, :__adapter_options, [])
 
     adapter.call(env, adapter_options)

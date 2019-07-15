@@ -13,47 +13,54 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
     )
 
     adapter fn env ->
-      {status, body} =
-        case env.url do
-          "/connection-error" ->
-            raise %Tesla.Error{message: "adapter error: :econnrefused", reason: :econnrefused}
+      if env.url == "/connection-error" do
+        {:error, %Tesla.Error{env: env, reason: :econnrefused}}
+      else
+        {status, body} =
+          case env.url do
+            "/server-error" ->
+              {500, "error"}
 
-          "/server-error" ->
-            {500, "error"}
+            "/client-error" ->
+              {404, "error"}
 
-          "/client-error" ->
-            {404, "error"}
+            "/teapot" ->
+              {418, "i am a teapot"}
 
-          "/teapot" ->
-            {418, "i am a teapot"}
+            "/unprocessable-entity" ->
+              {422, "error"}
 
-          "/unprocessable-entity" ->
-            {422, "error"}
+            "/redirect" ->
+              {301, "moved"}
 
-          "/redirect" ->
-            {301, "moved"}
+            "/ok" ->
+              {200, "ok"}
+          end
 
-          "/ok" ->
-            {200, "ok"}
-        end
-
-      %{env | status: status, headers: %{"content-type" => "text/plain"}, body: body}
+        {:ok, %{env | status: status, headers: [{"content-type", "text/plain"}], body: body}}
+      end
     end
   end
 
   import ExUnit.CaptureLog
 
   setup do
+    level_before = Logger.level()
+
     Logger.configure(level: :info)
+
+    on_exit(fn ->
+      Logger.configure(level: level_before)
+    end)
   end
 
   test "connection error" do
     log =
       capture_log(fn ->
-        assert_raise Tesla.Error, fn -> Client.get("/connection-error") end
+        assert {:error, %Tesla.Error{}} = Client.get("/connection-error")
       end)
 
-    assert log =~ "/connection-error -> adapter error: :econnrefused"
+    assert log =~ "/connection-error -> :econnrefused"
   end
 
   test "server error" do

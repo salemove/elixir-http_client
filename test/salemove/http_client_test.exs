@@ -48,8 +48,8 @@ defmodule Salemove.HttpClientTest do
       assert {:ok, %{body: ^response}} = apply(TestClient, verb, ["/test"])
       assert_requested(env)
 
-      assert %{"x-custom-header" => "A value"} = env.headers
-      assert %{"authorization" => "Basic " <> auth} = env.headers
+      assert "A value" = Tesla.get_header(env, "X-Custom-Header")
+      assert "Basic " <> auth = Tesla.get_header(env, "authorization")
       assert auth == Base.encode64("user:pass")
       assert env.url == "http://test-api/test"
       assert env.method == verb
@@ -68,12 +68,13 @@ defmodule Salemove.HttpClientTest do
       assert {:ok, %{body: ^response}} = apply(TestClient, verb, ["/test", request])
       assert_requested(env)
 
-      assert %{"x-custom-header" => "A value"} = env.headers
+      assert "A value" = Tesla.get_header(env, "X-Custom-Header")
+      assert "Basic " <> auth = Tesla.get_header(env, "authorization")
+
       assert env.url == "http://test-api/test"
-      assert %{"authorization" => "Basic " <> auth} = env.headers
       assert auth == Base.encode64("user:pass")
       assert env.method == verb
-      assert env.body == Poison.encode!(request)
+      assert env.body == Jason.encode!(request)
     end
   end
 
@@ -92,25 +93,24 @@ defmodule Salemove.HttpClientTest do
 
     @tag capture_log: true
     test "returns {:error, %ConnectionError{}} when adapter throws an error" do
-      error_message = "Adapter error (econnrefused)"
       error_reason = :econnrefused
-      exception = %Tesla.Error{message: error_message, reason: error_reason}
+      env = %Tesla.Env{}
+
+      exception = %Tesla.Error{env: env, reason: error_reason}
 
       allow_http_request(fn _env ->
-        raise exception
+        {:error, exception}
       end)
 
       assert {:error, error} = TestClient.get("/test")
-      assert %ConnectionError{message: ^error_message, reason: ^error_reason} = error
+      assert %ConnectionError{reason: ^error_reason} = error
     end
 
     @tag capture_log: true
     test "retries if connection was refused and `:retry` option is on" do
       {:ok, counter} = Counter.start_link()
 
-      error_message = "Adapter error (econnrefused)"
       error_reason = :econnrefused
-      exception = %Tesla.Error{message: error_message, reason: error_reason}
 
       normal_response = %{"response" => "value"}
 
@@ -124,7 +124,7 @@ defmodule Salemove.HttpClientTest do
         else
           send(self_pid, :connection_refused_received)
 
-          raise exception
+          {:error, %Tesla.Error{env: env, reason: error_reason}}
         end
       end)
 
@@ -168,7 +168,7 @@ defmodule Salemove.HttpClientTest do
         env
         |> status(200)
         |> body("{asdf")
-        |> header("Content-Type", "application/json")
+        |> header("content-type", "application/json")
       end)
 
       assert {:error, %JSONError{}} = TestClient.get("/test")

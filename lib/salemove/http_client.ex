@@ -30,7 +30,6 @@ defmodule Salemove.HttpClient do
       See `Tesla.Middleware.BasicAuth`.
     * `:password` - see `:username`.
     * `:log` - Logging options, see `Salemove.HttpClient.Middleware.Logger`
-    * `:debug` - Turn on/off verbose request/response logging, defaults to `false`
 
   HTTP client can be configured at runtime and at compile time via configuration files. Note,
   that you can use `{:system, env_name}` tuples to configure the client
@@ -39,14 +38,14 @@ defmodule Salemove.HttpClient do
 
   You can pass additional `Keyword` argument to request functions:
 
-      Github.user_repos("take-five", adapter: :mock, base_url: "http://mocked-gh/")
+      Github.user_repos("take-five", adapter: Tesla.Mock, base_url: "http://mocked-gh/")
 
   ### Configuration via config files
 
   In `config/config.exs`:
 
       config :salemove_http_client,
-        adapter: :mock,
+        adapter: Tesla.Mock,
         base_url: "http://mocked-gh/"
   """
 
@@ -81,7 +80,6 @@ defmodule Salemove.HttpClient do
       connect_timeout: 1500,
       recv_timeout: 4500
     ],
-    debug: false,
     retry: false
   ]
   @application_defaults Keyword.merge(@hardcoded_defaults, Application.get_all_env(:salemove_http_client) || [])
@@ -118,14 +116,14 @@ defmodule Salemove.HttpClient do
     |> Keyword.merge(options)
     |> Confex.Resolver.resolve!()
     |> build_stack()
-    |> Tesla.build_client()
+    |> Tesla.client()
   end
 
   defp build_stack(options) do
     encode_json_enabled = Keyword.get(options, :json, true)
 
     []
-    |> push_middleware(Tesla.Middleware.Tuples)
+    |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]})
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
@@ -137,7 +135,6 @@ defmodule Salemove.HttpClient do
       if: options[:username] && options[:password]
     )
     |> push_middleware({Salemove.HttpClient.Middleware.Logger, options[:log]})
-    |> push_middleware(Tesla.Middleware.DebugLogger, if: options[:debug])
     |> push_middleware(Tesla.Middleware.Tapper, if: tapper_enabled?(options))
     |> push_middleware({__MODULE__.Adapter, options})
     |> Enum.reverse()

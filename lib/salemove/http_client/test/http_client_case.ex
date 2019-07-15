@@ -12,7 +12,7 @@ defmodule Salemove.HttpClientCase do
 
       config :my_app, GithubClient,
         base_url: "https://api.github.com/",
-        adapter: :mock
+        adapter: Tesla.Mock
 
       defmodule GithubClient do
         use Salemove.HttpClient, Application.get_env(:my_app, __MODULE__)
@@ -89,15 +89,15 @@ defmodule Salemove.HttpClientCase do
   """
   def json(%Tesla.Env{} = env, body) do
     env
-    |> header("Content-Type", "application/json")
-    |> body(Poison.encode!(body))
+    |> header("content-type", "application/json")
+    |> body(Jason.encode!(body))
   end
 
   @doc """
   Add arbitrary header to the mocked response
   """
   def header(%Tesla.Env{} = env, name, value) do
-    put_in(env.headers[name], value)
+    Tesla.put_header(env, name, value)
   end
 
   defp notify_calling_process(env) do

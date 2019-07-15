@@ -24,11 +24,17 @@ Documentation can be found at [https://hexdocs.pm/salemove_http_client](https://
 
 ```elixir
 defmodule GihubClient do
-  use Salemove.HttpClient, 
-      base_url: "https://api.github.com/",
-      debug: Mix.env == :dev
+  use Salemove.HttpClient,
+      base_url: "https://api.github.com/"
 end
 ```
+
+## Migrating from 0.x to 1.0
+
+Most changes are due to changes in Tesla HTTP client. Migrating guide for tesla can be seen at https://github.com/teamon/tesla/wiki/0.x-to-1.0-Migration-Guide.
+
+### Changes specific to Salemove HTTP Client
+* `Salemove.HttpClient.ConnectionError` struct no longer has a field `message`. The error message can be fetched using `Exception.message/1`.
 
 ## License
 
