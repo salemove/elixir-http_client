@@ -94,12 +94,9 @@ defmodule Salemove.HttpClientTest do
     @tag capture_log: true
     test "returns {:error, %ConnectionError{}} when adapter throws an error" do
       error_reason = :econnrefused
-      env = %Tesla.Env{}
-
-      exception = %Tesla.Error{env: env, reason: error_reason}
 
       allow_http_request(fn _env ->
-        {:error, exception}
+        {:error, error_reason}
       end)
 
       assert {:error, error} = TestClient.get("/test")
@@ -124,7 +121,7 @@ defmodule Salemove.HttpClientTest do
         else
           send(self_pid, :connection_refused_received)
 
-          {:error, %Tesla.Error{env: env, reason: error_reason}}
+          {:error, error_reason}
         end
       end)
 

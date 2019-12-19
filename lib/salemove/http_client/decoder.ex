@@ -14,7 +14,7 @@ defmodule Salemove.HttpClient.Decoder do
   alias Salemove.HttpClient.UnavailableError
   alias Salemove.HttpClient.UnsupportedProtocolError
 
-  @type tesla_result :: {:ok, Tesla.Env.t()} | {:error, %Tesla.Error{}}
+  @type tesla_result :: {:ok, Tesla.Env.t()} | {:error, reason :: any}
   @type on_decode :: {:ok, Response.t()} | {:error, reason}
   @type reason ::
           JSONError.t()
@@ -36,12 +36,12 @@ defmodule Salemove.HttpClient.Decoder do
     decode_env(env)
   end
 
-  def decode({:error, %Tesla.Error{} = error}) do
+  def decode({:error, {Tesla.Middleware.JSON, :decode, %Jason.DecodeError{} = error}}) do
     decode_error(error)
   end
 
-  def decode({:error, {Tesla.Middleware.JSON, :decode, %Jason.DecodeError{} = error}}) do
-    decode_error(error)
+  def decode({:error, reason}) do
+    decode_error(reason)
   end
 
   ##
@@ -61,7 +61,7 @@ defmodule Salemove.HttpClient.Decoder do
     {:error, %JSONError{reason: Exception.message(error)}}
   end
 
-  defp decode_error(%Tesla.Error{reason: reason}) do
+  defp decode_error(reason) do
     {:error, %ConnectionError{reason: reason}}
   end
 end
