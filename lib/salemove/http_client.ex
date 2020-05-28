@@ -113,7 +113,7 @@ defmodule Salemove.HttpClient do
 
   defp build_client(options) do
     @application_defaults
-    |> Keyword.merge(options)
+    |> DeepMerge.deep_merge(options)
     |> Confex.Resolver.resolve!()
     |> build_stack()
     |> Tesla.client()
