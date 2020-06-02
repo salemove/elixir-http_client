@@ -113,7 +113,7 @@ defmodule Salemove.HttpClient do
 
   defp build_client(options) do
     @application_defaults
-    |> Keyword.merge(options)
+    |> Keyword.merge(options, &deep_merge/3)
     |> Confex.Resolver.resolve!()
     |> build_stack()
     |> Tesla.client()
@@ -184,5 +184,17 @@ defmodule Salemove.HttpClient do
         |> request()
       end
     end
+  end
+
+  defp deep_merge(_key, value1, value2) when is_list(value1) and is_list(value2) do
+    if Keyword.keyword?(value1) and Keyword.keyword?(value2) do
+      Keyword.merge(value1, value2, &deep_merge/3)
+    else
+      value2
+    end
+  end
+
+  defp deep_merge(_key, _value1, value2) do
+    value2
   end
 end
