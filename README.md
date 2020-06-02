@@ -36,6 +36,50 @@ Most changes are due to changes in Tesla HTTP client. Migrating guide for tesla 
 ### Changes specific to Salemove HTTP Client
 * `Salemove.HttpClient.ConnectionError` struct no longer has a field `message`. The error message can be fetched using `Exception.message/1`.
 
+## Migrating from 1.x to 2.0
+
+Module config is now deep merged with base salemove_http_client config, so when upgrading, make sure that calls to Salemove HTTP Client don't rely on the configuration being shallow merged.
+
+### Example
+
+```elixir
+config :foo, Some.Module,
+  adapter_options: [
+    connect_timeout: 8000
+]
+
+config :salemove_http_client,
+adapter_options: [
+  ssl_options: [verify: :verify_none]
+]
+```
+
+and as a result of
+
+```elixir
+use Salemove.HttpClient, Application.fetch_env!(:foo, Some.Module)
+```
+
+with the older version the configuration would have been:
+
+```elixir
+adapter_options: [
+  connect_timeout: 8000
+]
+```
+
+with 2.x and upwards it is:
+
+```elixir
+adapter_options: [
+  ssl_options: [verify: :verify_none],
+  connect_timeout: 8000
+]
+```
+
+To disable stats now, you can just set `stats` value to `false` in the module configuration.
+
+
 ## License
 
 MIT License, Copyright (c) 2017 SaleMove
