@@ -12,6 +12,29 @@
       specified in the config or set to false. This allows turning off stats
       in tests, for example.
 
+## v1.0.1
+  * Bug fixes
+    * Fixed error decoding to work correctly with Tesla 1.x
+
+      Since release of 1.0, Tesla no longer wraps connection errors into
+      `%Tesla.Error{}` structs.
+
+## v1.0.0
+  * Breaking Changes
+    * Upgraded Tesla to 1.0
+
+      This upgrade brings the following potentially breaking changes:
+
+      - Headers are now stored as keyword lists
+      - Errors are now handled with `{:ok, _}` and `{:error, _}`
+
+  * Enhancements
+    * Replace Poison with Jason
+    * Added support for headers in a map
+
+  * Bug fixes
+    * Fixed logger configuration in LoggerTest
+
 ## v0.2.1
 
   * Enhancement
