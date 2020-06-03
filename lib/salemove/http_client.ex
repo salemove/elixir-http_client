@@ -113,7 +113,7 @@ defmodule Salemove.HttpClient do
 
   defp build_client(options) do
     @application_defaults
-    |> Keyword.merge(options)
+    |> Keyword.merge(options, &deep_merge/3)
     |> Confex.Resolver.resolve!()
     |> build_stack()
     |> Tesla.client()
@@ -121,11 +121,12 @@ defmodule Salemove.HttpClient do
 
   defp build_stack(options) do
     encode_json_enabled = Keyword.get(options, :json, true)
+    stats_enabled = Keyword.get(options, :stats, true)
 
     []
     |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
-    |> push_middleware({Tesla.StatsD, options[:stats]})
+    |> push_middleware({Tesla.StatsD, options[:stats]}, if: stats_enabled)
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
     |> push_middleware(Tesla.Middleware.FormUrlencoded, if: !encode_json_enabled)
     |> push_middleware({Tesla.Middleware.EncodeJson, options[:json]}, if: encode_json_enabled)
@@ -184,5 +185,17 @@ defmodule Salemove.HttpClient do
         |> request()
       end
     end
+  end
+
+  defp deep_merge(_key, value1, value2) when is_list(value1) and is_list(value2) do
+    if Keyword.keyword?(value1) and Keyword.keyword?(value2) do
+      Keyword.merge(value1, value2, &deep_merge/3)
+    else
+      value2
+    end
+  end
+
+  defp deep_merge(_key, _value1, value2) do
+    value2
   end
 end
