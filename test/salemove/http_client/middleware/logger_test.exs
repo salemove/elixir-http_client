@@ -13,31 +13,36 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
     )
 
     adapter fn env ->
-      if env.url == "/connection-error" do
-        {:error, %Tesla.Error{env: env, reason: :econnrefused}}
-      else
-        {status, body} =
-          case env.url do
-            "/server-error" ->
-              {500, "error"}
+      case env.url do
+        "/connection-error" ->
+          {:error, %Tesla.Error{env: env, reason: :econnrefused}}
 
-            "/client-error" ->
-              {404, "error"}
+        "/unexpected-error" ->
+          {:error, "unexpected error"}
 
-            "/teapot" ->
-              {418, "i am a teapot"}
+        _ ->
+          {status, body} =
+            case env.url do
+              "/server-error" ->
+                {500, "error"}
 
-            "/unprocessable-entity" ->
-              {422, "error"}
+              "/client-error" ->
+                {404, "error"}
 
-            "/redirect" ->
-              {301, "moved"}
+              "/teapot" ->
+                {418, "i am a teapot"}
 
-            "/ok" ->
-              {200, "ok"}
-          end
+              "/unprocessable-entity" ->
+                {422, "error"}
 
-        {:ok, %{env | status: status, headers: [{"content-type", "text/plain"}], body: body}}
+              "/redirect" ->
+                {301, "moved"}
+
+              "/ok" ->
+                {200, "ok"}
+            end
+
+          {:ok, %{env | status: status, headers: [{"content-type", "text/plain"}], body: body}}
       end
     end
   end
@@ -83,6 +88,12 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
     log = capture_log(fn -> Client.get("/teapot") end)
     assert log =~ "/teapot -> 418"
     assert log =~ "warn"
+  end
+
+  test "unexpected error" do
+    log = capture_log(fn -> Client.get("/unexpected-error") end)
+    assert log =~ "/unexpected-error -> \"unexpected error\""
+    assert log =~ "[error]"
   end
 
   test "redirect" do

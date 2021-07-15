@@ -37,17 +37,18 @@ defmodule Salemove.HttpClient.Middleware.Logger do
 
       {:ok, env}
     else
-      {:error, %Tesla.Error{} = ex} ->
-        _ = log(env, ex, elapsed_ms(time_start), opts)
-        {:error, ex}
-
       {:error, error} ->
+        log(env, error, elapsed_ms(time_start), opts)
         {:error, error}
     end
   end
 
   defp log(env, %Tesla.Error{reason: reason}, elapsed_ms, opts) do
     log_status(0, "#{normalize_method(env)} #{env.url} -> #{inspect(reason)} (#{elapsed_ms} ms)", opts)
+  end
+
+  defp log(env, error, elapsed_ms, opts) do
+    log_status(0, "#{normalize_method(env)} #{env.url} -> #{inspect(error)} (#{elapsed_ms} ms)", opts)
   end
 
   defp log(env, elapsed_ms, opts) do
