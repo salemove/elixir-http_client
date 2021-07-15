@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.1
+  * Bug fixes
+    * Fix a case when specific request failure errors were not logged
+
 ## v2.0.0
   * Breaking changes
     * Module config is now deep merged with base salemove_http_client config.

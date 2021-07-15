@@ -4,7 +4,7 @@ defmodule Salemove.HttpClient.Mixfile do
   def project do
     [
       app: :salemove_http_client,
-      version: "2.0.0",
+      version: "2.0.1",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
