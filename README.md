@@ -1,6 +1,6 @@
 # Salemove.HttpClient
 
-[![Build Status](https://travis-ci.org/salemove/elixir-http_client.svg?branch=add-support-for-global-config)](https://travis-ci.org/salemove/elixir-http_client)
+![Build Status](https://github.com/salemove/elixir-http_client/actions/workflows/ci.yml/badge.svg)
 [![Hex.pm](https://img.shields.io/hexpm/v/salemove_http_client.svg)](https://hex.pm/packages/salemove_http_client)
 [![Documentation](https://img.shields.io/badge/Documentation-online-green.svg)](http://hexdocs.pm/salemove_http_client)
 
