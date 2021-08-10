@@ -17,6 +17,9 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
         "/connection-error" ->
           {:error, %Tesla.Error{env: env, reason: :econnrefused}}
 
+        "/timeout" ->
+          {:error, %Tesla.Error{env: env, reason: :timeout}}
+
         "/unexpected-error" ->
           {:error, "unexpected error"}
 
@@ -66,6 +69,12 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
       end)
 
     assert log =~ "/connection-error -> :econnrefused"
+  end
+
+  test "timeout" do
+    log = capture_log(fn -> Client.get("/timeout") end)
+    assert log =~ "/timeout -> :timeout"
+    assert log =~ "[warn]"
   end
 
   test "server error" do
