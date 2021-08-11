@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.2
+  * Bug fixes
+    * Reduce log level of a timeout from "error" to "warn"
+
 ## v2.0.1
   * Bug fixes
     * Fix a case when specific request failure errors were not logged
