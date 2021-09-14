@@ -45,7 +45,7 @@ defmodule Salemove.HttpClient.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.0"},
+      {:tesla, "~> 1.4.0"},
       {:tesla_statsd, "~> 0.3.0"},
       {:confex, "~> 3.0"},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
