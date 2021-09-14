@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.0.0
+  * Enhancements
+    * `retry` now allows to specify `should_retry` that can be used to disable retry for some requests
+      based on the response.
+
+      See https://hexdocs.pm/tesla/1.4.3/Tesla.Middleware.Retry.html#module-examples for more examples.
+
+  * Breaking changes
+    * `retry` now works with exponential backoff by default
+      This change comes with an upgrade to Tesla v1.4
+
+      Even through this was a minor version bump and the API has not changed, this Tesla update
+      still contains backward incompatible behaviour changes, specifically in Retry middleware.
+
+      Previously Retry middleware `delay` setting was used as a absolute wait time before retrying failed requests,
+      however, now it works as a base for exponential retry, so the delay itself can be different.
+
 ## v2.0.2
   * Bug fixes
     * Reduce log level of a timeout from "error" to "warn"

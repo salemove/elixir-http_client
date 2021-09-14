@@ -29,12 +29,33 @@ defmodule GihubClient do
 end
 ```
 
-## Migrating from 0.x to 1.0
+## Migrating from 2.x to 3.0
 
-Most changes are due to changes in Tesla HTTP client. Migrating guide for tesla can be seen at https://github.com/teamon/tesla/wiki/0.x-to-1.0-Migration-Guide.
+In v3 `retry` uses exponential backoff by default and uses `delay` config option as a base value for the backoff.
+This means that `delay` is only a starting time between the retries and it will grow exponentially until `max_delay`
+is reached, which is by default 5 seconds.
 
-### Changes specific to Salemove HTTP Client
-* `Salemove.HttpClient.ConnectionError` struct no longer has a field `message`. The error message can be fetched using `Exception.message/1`.
+To keep the behaviour the same as before set `delay` and `mex_delay` the same value and set `jitter_factor` to `0`.
+
+### Before
+
+```elixir
+config :foo, Some.Module,
+  retry: [
+    delay: 300
+  ]
+```
+
+### After
+
+```elixir
+config :foo, Some.Module,
+  retry: [
+    delay: 300,
+    max_delay: 300,
+    jitter_factor: 0
+  ]
+```
 
 ## Migrating from 1.x to 2.0
 
@@ -79,6 +100,12 @@ adapter_options: [
 
 To disable stats now, you can just set `stats` value to `false` in the module configuration.
 
+## Migrating from 0.x to 1.0
+
+Most changes are due to changes in Tesla HTTP client. Migrating guide for tesla can be seen at https://github.com/teamon/tesla/wiki/0.x-to-1.0-Migration-Guide.
+
+### Changes specific to Salemove HTTP Client
+* `Salemove.HttpClient.ConnectionError` struct no longer has a field `message`. The error message can be fetched using `Exception.message/1`.
 
 ## License
 
