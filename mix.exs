@@ -52,7 +52,6 @@ defmodule Salemove.HttpClient.Mixfile do
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:tesla_middleware_tapper, "~> 0.2.0", optional: true},
       {:jason, "~> 1.1"}
     ]
   end
