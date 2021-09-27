@@ -125,6 +125,7 @@ defmodule Salemove.HttpClient do
 
     []
     |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)
+    |> push_middleware(Tesla.Middleware.Telemetry)
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]}, if: stats_enabled)
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
