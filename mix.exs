@@ -4,7 +4,7 @@ defmodule Salemove.HttpClient.Mixfile do
   def project do
     [
       app: :salemove_http_client,
-      version: "2.0.2",
+      version: "2.1.0-rc.1",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
@@ -45,13 +45,14 @@ defmodule Salemove.HttpClient.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.0"},
+      {:tesla, "~> 1.4"},
       {:tesla_statsd, "~> 0.3.0"},
       {:confex, "~> 3.0"},
+      {:telemetry, "~> 0.4 or ~> 1.0"},
+      {:opentelemetry_tesla, "~> 1.3.0-rc.1", optional: true},
       {:ex_statsd, ">= 0.0.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:tesla_middleware_tapper, "~> 0.2.0", optional: true},
       {:jason, "~> 1.1"}
     ]
   end

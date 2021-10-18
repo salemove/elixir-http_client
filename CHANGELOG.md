@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0-rc.1
+  * Enhancements
+    * Replace vendor specific tapper library with vendor neutral OpenTelemetry library.
+
 ## v2.0.2
   * Bug fixes
     * Reduce log level of a timeout from "error" to "warn"

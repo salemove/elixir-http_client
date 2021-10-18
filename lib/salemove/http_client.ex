@@ -125,6 +125,8 @@ defmodule Salemove.HttpClient do
 
     []
     |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)
+    |> push_middleware(Tesla.Middleware.Telemetry)
+    |> push_middleware(Tesla.Middleware.OpenTelemetry, if: opentelemetry_enabled?(options))
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]}, if: stats_enabled)
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
@@ -136,17 +138,16 @@ defmodule Salemove.HttpClient do
       if: options[:username] && options[:password]
     )
     |> push_middleware({Salemove.HttpClient.Middleware.Logger, options[:log]})
-    |> push_middleware(Tesla.Middleware.Tapper, if: tapper_enabled?(options))
     |> push_middleware({__MODULE__.Adapter, options})
     |> Enum.reverse()
   end
 
-  if Code.ensure_loaded?(Tesla.Middleware.Tapper) do
-    defp tapper_enabled?(options) do
-      Keyword.get(options, :tapper, true)
+  if Code.ensure_loaded?(Tesla.Middleware.OpenTelemetry) do
+    defp opentelemetry_enabled?(options) do
+      Keyword.get(options, :opentelemetry, true)
     end
   else
-    defp tapper_enabled?(_), do: false
+    defp opentelemetry_enabled?(_), do: false
   end
 
   defp push_middleware(stack, middleware, [if: condition] \\ [if: true]) do
