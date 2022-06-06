@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+  * Enhancements
+    * Update opentelemetry_tesla dependency to 2.0
+
 ## v2.1.0-rc.1
   * Enhancements
     * Replace vendor specific tapper library with vendor neutral OpenTelemetry library.
