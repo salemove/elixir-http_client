@@ -46,7 +46,7 @@ defmodule Salemove.HttpClient.Mixfile do
   defp deps do
     [
       {:tesla, "~> 1.4"},
-      {:tesla_statsd, "~> 0.3.0"},
+      {:tesla_statsd, "~> 0.4.0"},
       {:confex, "~> 3.0"},
       {:telemetry, "~> 0.4 or ~> 1.0"},
       {:opentelemetry_tesla, "~> 1.3.2-rc.4", optional: true},
