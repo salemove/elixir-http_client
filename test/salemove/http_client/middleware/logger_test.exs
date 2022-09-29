@@ -20,6 +20,9 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
         "/timeout" ->
           {:error, %Tesla.Error{env: env, reason: :timeout}}
 
+        "/closed" ->
+          {:error, %Tesla.Error{env: env, reason: :closed}}
+
         "/unexpected-error" ->
           {:error, "unexpected error"}
 
@@ -74,6 +77,12 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   test "timeout" do
     log = capture_log(fn -> Client.get("/timeout") end)
     assert log =~ "/timeout -> :timeout"
+    assert log =~ "[warn]"
+  end
+
+  test "closed" do
+    log = capture_log(fn -> Client.get("/closed") end)
+    assert log =~ "/closed -> :closed"
     assert log =~ "[warn]"
   end
 
