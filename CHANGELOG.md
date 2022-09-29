@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.1
+  * Bug fixes
+    * Reduce log level of closed request from "error" to "warn"
+
 ## v2.1.0
   * Enhancements
     * Update opentelemetry_tesla dependency to 2.0
