@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.1.2
+  * Bug fixes
+    * Fix log levels of requests that end with `:timeout` or `:closed` from
+      "error" to "warn"
+
 ## v2.1.1
   * Bug fixes
     * Reduce log level of closed request from "error" to "warn"
