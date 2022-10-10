@@ -12,7 +12,8 @@ defmodule Salemove.HttpClient.Mixfile do
       package: package(),
       description: description(),
       docs: [
-        main: "Salemove.HttpClient"
+        main: "Salemove.HttpClient",
+        extras: ["CHANGELOG.md"]
       ],
       dialyzer: [
         plt_add_apps: [:ex_unit],
