@@ -43,12 +43,12 @@ defmodule Salemove.HttpClient.Middleware.Logger do
     end
   end
 
-  defp log(env, %Tesla.Error{reason: :timeout}, elapsed_ms, _opts) do
+  defp log(env, :timeout, elapsed_ms, _opts) do
     message = "#{normalize_method(env)} #{env.url} -> :timeout (#{elapsed_ms} ms)"
     Logger.log(:warn, message)
   end
 
-  defp log(env, %Tesla.Error{reason: :closed}, elapsed_ms, _opts) do
+  defp log(env, :closed, elapsed_ms, _opts) do
     message = "#{normalize_method(env)} #{env.url} -> :closed (#{elapsed_ms} ms)"
     Logger.log(:warn, message)
   end

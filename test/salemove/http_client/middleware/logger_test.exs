@@ -18,10 +18,10 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
           {:error, %Tesla.Error{env: env, reason: :econnrefused}}
 
         "/timeout" ->
-          {:error, %Tesla.Error{env: env, reason: :timeout}}
+          {:error, :timeout}
 
         "/closed" ->
-          {:error, %Tesla.Error{env: env, reason: :closed}}
+          {:error, :closed}
 
         "/unexpected-error" ->
           {:error, "unexpected error"}
