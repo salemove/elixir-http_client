@@ -77,13 +77,13 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   test "timeout" do
     log = capture_log(fn -> Client.get("/timeout") end)
     assert log =~ "/timeout -> :timeout"
-    assert log =~ "[warn]"
+    assert log =~ ~r/\[warn(ing)?\]/
   end
 
   test "closed" do
     log = capture_log(fn -> Client.get("/closed") end)
     assert log =~ "/closed -> :closed"
-    assert log =~ "[warn]"
+    assert log =~ ~r/\[warn(ing)?\]/
   end
 
   test "server error" do
@@ -105,7 +105,7 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   test "client error with custom log level option supplied as range" do
     log = capture_log(fn -> Client.get("/teapot") end)
     assert log =~ "/teapot -> 418"
-    assert log =~ "warn"
+    assert log =~ ~r/\[warn(ing)?\]/
   end
 
   test "unexpected error" do
