@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.0
+  * Enhancements
+    * Add support for HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
+
 ## v2.1.2
   * Bug fixes
     * Fix log levels of requests that end with `:timeout` or `:closed` from
