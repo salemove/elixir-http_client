@@ -30,6 +30,7 @@ defmodule Salemove.HttpClient do
       See `Tesla.Middleware.BasicAuth`.
     * `:password` - see `:username`.
     * `:log` - Logging options, see `Salemove.HttpClient.Middleware.Logger`
+    * `:proxy` - HTTP(S) proxy URL
 
   HTTP client can be configured at runtime and at compile time via configuration files. Note,
   that you can use `{:system, env_name}` tuples to configure the client
@@ -130,6 +131,8 @@ defmodule Salemove.HttpClient do
     |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]}, if: stats_enabled)
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
+    # proxy middleware must be after the BaseUrl one, because it requires a full URL
+    |> push_middleware({Salemove.HttpClient.Middleware.Proxy, options})
     |> push_middleware(Tesla.Middleware.FormUrlencoded, if: !encode_json_enabled)
     |> push_middleware({Tesla.Middleware.EncodeJson, options[:json]}, if: encode_json_enabled)
     |> push_middleware({Tesla.Middleware.DecodeJson, options[:json]})
@@ -138,7 +141,6 @@ defmodule Salemove.HttpClient do
       if: options[:username] && options[:password]
     )
     |> push_middleware({Salemove.HttpClient.Middleware.Logger, options[:log]})
-    |> push_middleware({__MODULE__.Adapter, options})
     |> Enum.reverse()
   end
 
