@@ -9,19 +9,9 @@ defmodule Salemove.HttpClient.Adapter do
   """
 
   @doc false
-  # executed as middleware
-  def call(env, next, opts) do
-    env
-    |> Tesla.put_opt(:__adapter, Keyword.fetch!(opts, :adapter))
-    |> Tesla.put_opt(:__adapter_options, Keyword.get(opts, :adapter_options, []))
-    |> Tesla.run(next)
-  end
-
-  @doc false
-  # executed as adapter
   def call(%{opts: opts} = env, _opts) do
-    adapter = Keyword.fetch!(opts, :__adapter)
-    adapter_options = Keyword.get(opts, :__adapter_options, [])
+    adapter = Keyword.fetch!(opts, :adapter)
+    adapter_options = Keyword.get(opts, :adapter_options, [])
 
     adapter.call(env, adapter_options)
   end
