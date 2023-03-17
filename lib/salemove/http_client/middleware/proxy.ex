@@ -42,11 +42,17 @@ defmodule Salemove.HttpClient.Middleware.Proxy do
       |> Keyword.put(:proxy, proxy)
 
     new_options =
-      Keyword.update(opts, :adapter_options, proxy_options, fn adapter_options ->
+      opts
+      |> adapter_options()
+      |> Keyword.update(:__adapter_options, proxy_options, fn adapter_options ->
         adapter_options ++ proxy_options
       end)
 
     %{env | opts: new_options}
+  end
+
+  defp adapter_options(opts) do
+    [__adapter: opts[:adapter], __adapter_options: opts[:adapter_options]]
   end
 
   defp check_no_proxy(nil, _) do
