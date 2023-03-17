@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.1
+* Bug fixes
+    * Fix proxy using Hackney's internal option names
+    * Fix adapter options not being set when using no proxy
+
 ## v2.2.0
   * Enhancements
     * Add support for HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables.
