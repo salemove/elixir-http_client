@@ -17,7 +17,9 @@ defmodule Salemove.HttpClient.Middleware.Proxy do
       |> inject_proxy(opts)
       |> Tesla.run(next)
     else
-      Tesla.run(env, next)
+      env
+      |> inject_adapter(opts)
+      |> Tesla.run(next)
     end
   end
 
@@ -53,6 +55,10 @@ defmodule Salemove.HttpClient.Middleware.Proxy do
 
   defp adapter_options(opts) do
     [__adapter: opts[:adapter], __adapter_options: opts[:adapter_options]]
+  end
+
+  defp inject_adapter(env, opts) do
+    %{env | opts: adapter_options(opts)}
   end
 
   defp check_no_proxy(nil, _) do

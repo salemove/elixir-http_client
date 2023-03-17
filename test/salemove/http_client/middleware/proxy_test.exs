@@ -46,6 +46,29 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
     end
   end
 
+  describe "when client disabled proxy on module level" do
+    defmodule NoProxyClient do
+      use Salemove.HttpClient,
+        base_url: "http://test-api/",
+        proxy: false
+    end
+
+    test "sets adapter and adapter options in environment opts" do
+      {:ok, _} = NoProxyClient.get("/test")
+      assert_requested(env)
+
+      assert env.opts[:__adapter] == Tesla.Mock
+      assert env.opts[:__adapter_options] == @default_adapter_options
+    end
+
+    test "does not send request through proxy" do
+      {:ok, _} = NoProxyClient.get("/test")
+      assert_requested(env)
+
+      assert env.opts[:__adapter_options][:proxy] == nil
+    end
+  end
+
   describe "when client configured proxy via environment variables" do
     @http_proxy "http://127.0.0.1:3128/"
     @https_proxy "https://127.0.0.1:3128/"
