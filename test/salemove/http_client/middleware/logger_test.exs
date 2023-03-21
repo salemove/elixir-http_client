@@ -65,25 +65,33 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
     end)
   end
 
+  @format "[$level] $message $metadata\n"
+  @metadata [:method, :path, :duration_ms, :status]
+
+  @logger_opts [format: @format, metadata: @metadata]
+
   test "connection error" do
     log =
-      capture_log(fn ->
+      capture_log(@logger_opts, fn ->
         assert {:error, %Tesla.Error{}} = Client.get("/connection-error")
       end)
 
     assert log =~ "/connection-error -> :econnrefused"
+    assert log =~ ~r/status=:econnrefused/
   end
 
   test "timeout" do
-    log = capture_log(fn -> Client.get("/timeout") end)
+    log = capture_log(@logger_opts, fn -> Client.get("/timeout") end)
     assert log =~ "/timeout -> :timeout"
     assert log =~ ~r/\[warn(ing)?\]/
+    assert log =~ ~r/status=timeout/
   end
 
   test "closed" do
-    log = capture_log(fn -> Client.get("/closed") end)
+    log = capture_log(@logger_opts, fn -> Client.get("/closed") end)
     assert log =~ "/closed -> :closed"
     assert log =~ ~r/\[warn(ing)?\]/
+    assert log =~ ~r/status=closed/
   end
 
   test "server error" do
@@ -109,9 +117,10 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   end
 
   test "unexpected error" do
-    log = capture_log(fn -> Client.get("/unexpected-error") end)
+    log = capture_log(@logger_opts, fn -> Client.get("/unexpected-error") end)
     assert log =~ "/unexpected-error -> \"unexpected error\""
     assert log =~ "[error]"
+    assert log =~ ~r/status="unexpected error"/
   end
 
   test "redirect" do
@@ -122,5 +131,14 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   test "ok" do
     log = capture_log(fn -> Client.get("/ok") end)
     assert log =~ "/ok -> 200"
+  end
+
+  test "metadata is included in the log" do
+    log = capture_log(@logger_opts, fn -> Client.get("/ok") end)
+
+    assert log =~ ~r/path=\/ok/
+    assert log =~ ~r/status=200/
+    assert log =~ ~r/method=GET/
+    assert log =~ ~r/duration_ms=\d\.\d{3}/
   end
 end
