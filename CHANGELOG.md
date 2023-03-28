@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.0
+* Enhancements
+    * Include method, path, status and duration in logger metadata
+
 ## v2.2.1
 * Bug fixes
     * Fix proxy using Hackney's internal option names

@@ -33,43 +33,62 @@ defmodule Salemove.HttpClient.Middleware.Logger do
     time_start = System.monotonic_time()
 
     with {:ok, env} <- Tesla.run(env, next) do
-      _ = log(env, elapsed_ms(time_start), opts)
+      elapsed_ms = elapsed_ms(time_start)
 
+      log(env, elapsed_ms, metadata(env, elapsed_ms), opts)
       {:ok, env}
     else
       {:error, error} ->
-        log(env, error, elapsed_ms(time_start), opts)
+        elapsed_ms = elapsed_ms(time_start)
+
+        log(env, error, elapsed_ms, metadata(env, elapsed_ms), opts)
         {:error, error}
     end
   end
 
-  defp log(env, :timeout, elapsed_ms, _opts) do
+  defp log(env, :timeout, elapsed_ms, metadata, _opts) do
     message = "#{normalize_method(env)} #{env.url} -> :timeout (#{elapsed_ms} ms)"
-    Logger.log(:warn, message)
+    Logger.log(:warn, message, metadata ++ [status: "timeout"])
   end
 
-  defp log(env, :closed, elapsed_ms, _opts) do
+  defp log(env, :closed, elapsed_ms, metadata, _opts) do
     message = "#{normalize_method(env)} #{env.url} -> :closed (#{elapsed_ms} ms)"
-    Logger.log(:warn, message)
+    Logger.log(:warn, message, metadata ++ [status: "closed"])
   end
 
-  defp log(env, %Tesla.Error{reason: reason}, elapsed_ms, opts) do
-    log_status(0, "#{normalize_method(env)} #{env.url} -> #{inspect(reason)} (#{elapsed_ms} ms)", opts)
+  defp log(env, %Tesla.Error{reason: reason}, elapsed_ms, metadata, opts) do
+    status = inspect(reason)
+
+    log_status(
+      0,
+      "#{normalize_method(env)} #{env.url} -> #{status} (#{elapsed_ms} ms)",
+      metadata ++ [status: normalize_status(status)],
+      opts
+    )
   end
 
-  defp log(env, error, elapsed_ms, opts) do
-    log_status(0, "#{normalize_method(env)} #{env.url} -> #{inspect(error)} (#{elapsed_ms} ms)", opts)
+  defp log(env, error, elapsed_ms, metadata, opts) do
+    status = inspect(error)
+
+    log_status(
+      0,
+      "#{normalize_method(env)} #{env.url} -> #{status} (#{elapsed_ms} ms)",
+      metadata ++ [status: normalize_status(status)],
+      opts
+    )
   end
 
-  defp log(env, elapsed_ms, opts) do
+  defp log(env, elapsed_ms, metadata, opts) do
     message = "#{normalize_method(env)} #{env.url} -> #{env.status} (#{elapsed_ms} ms)"
 
-    log_status(env.status, message, opts)
+    log_status(env.status, message, metadata ++ [status: normalize_status(env.status)], opts)
   end
 
   defp normalize_method(env) do
     env.method |> to_string() |> String.upcase()
   end
+
+  defp normalize_status(status), do: to_string(status)
 
   defp elapsed_ms(from) do
     now = System.monotonic_time()
@@ -77,12 +96,12 @@ defmodule Salemove.HttpClient.Middleware.Logger do
     :io_lib.format("~.3f", [us / 1000])
   end
 
-  defp log_status(status, message, opts) do
+  defp log_status(status, message, metadata, opts) do
     levels = Keyword.get(opts || [], :level)
 
     status
     |> status_to_level(levels)
-    |> Logger.log(message)
+    |> Logger.log(message, metadata)
   end
 
   defp status_to_level(status, levels) when is_map(levels) do
@@ -106,5 +125,9 @@ defmodule Salemove.HttpClient.Middleware.Logger do
       {^status, level} -> level
       _ -> false
     end)
+  end
+
+  defp metadata(env, elapsed_ms) do
+    [method: normalize_method(env), path: env.url, duration_ms: to_string(elapsed_ms)]
   end
 end
