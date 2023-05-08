@@ -97,6 +97,7 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   test "server error" do
     log = capture_log(fn -> Client.get("/server-error") end)
     assert log =~ "/server-error -> 500"
+    assert log =~ ~r/\[warn(ing)?\]/
   end
 
   test "client error" do
