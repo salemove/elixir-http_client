@@ -113,6 +113,7 @@ defmodule Salemove.HttpClient.Middleware.Logger do
 
   defp status_to_level(status, _) do
     cond do
+      status >= 500 -> :warn
       status >= 400 || status == 0 -> :error
       status >= 300 -> :warn
       true -> :info
