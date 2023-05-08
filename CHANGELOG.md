@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.4.0
+* Enhancements
+  * Changes log levels of requests that fail with 5XX from "error" to "warn"
+
 ## v2.3.0
 * Enhancements
     * Include method, path, status and duration in logger metadata
