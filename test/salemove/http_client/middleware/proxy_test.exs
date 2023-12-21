@@ -4,7 +4,9 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
   alias Salemove.HttpClient
 
   defmodule DefaultClient do
-    use Salemove.HttpClient, base_url: "http://test-api/"
+    use Salemove.HttpClient,
+      base_url: "http://test-api/",
+      stats: [backend: MockStats]
   end
 
   @default_adapter_options [connect_timeout: 1500, recv_timeout: 4500]
@@ -27,7 +29,8 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
     defmodule ProxyClient do
       use Salemove.HttpClient,
         base_url: "http://test-api/",
-        proxy: "http://127.0.0.1:3128/"
+        proxy: "http://127.0.0.1:3128/",
+        stats: [backend: MockStats]
     end
 
     test "sets adapter and adapter options in environment opts" do
@@ -50,7 +53,8 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
     defmodule NoProxyClient do
       use Salemove.HttpClient,
         base_url: "http://test-api/",
-        proxy: false
+        proxy: false,
+        stats: [backend: MockStats]
     end
 
     test "sets adapter and adapter options in environment opts" do
