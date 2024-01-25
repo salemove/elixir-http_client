@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.0.0
+* Breaking changes
+    * Stopped support for Elixir 1.12.
+
+* Enhancements
+    * Added support for Elixir 1.15 and Erlang 25.3.
+    * Changed log `warn` calls with `warning`, because `warn` is deprecated from Elixir 1.15.
+    * Long deprecated `ex_statsd` dependency has been removed.
+
 ## v2.4.0
 * Enhancements
   * Changes log levels of requests that fail with 5XX from "error" to "warn"

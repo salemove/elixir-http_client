@@ -15,7 +15,7 @@ defmodule Salemove.HttpClient.Middleware.Logger do
       level: %{
         100..399 => :info,
         422 => :info,
-        400..499 => :warn,
+        400..499 => :warning,
         500..600 => :error
       }
   end
@@ -48,12 +48,12 @@ defmodule Salemove.HttpClient.Middleware.Logger do
 
   defp log(env, :timeout, elapsed_ms, metadata, _opts) do
     message = "#{normalize_method(env)} #{env.url} -> :timeout (#{elapsed_ms} ms)"
-    Logger.log(:warn, message, metadata ++ [status: "timeout"])
+    Logger.log(:warning, message, metadata ++ [status: "timeout"])
   end
 
   defp log(env, :closed, elapsed_ms, metadata, _opts) do
     message = "#{normalize_method(env)} #{env.url} -> :closed (#{elapsed_ms} ms)"
-    Logger.log(:warn, message, metadata ++ [status: "closed"])
+    Logger.log(:warning, message, metadata ++ [status: "closed"])
   end
 
   defp log(env, %Tesla.Error{reason: reason}, elapsed_ms, metadata, opts) do
@@ -113,9 +113,9 @@ defmodule Salemove.HttpClient.Middleware.Logger do
 
   defp status_to_level(status, _) do
     cond do
-      status >= 500 -> :warn
+      status >= 500 -> :warning
       status >= 400 || status == 0 -> :error
-      status >= 300 -> :warn
+      status >= 300 -> :warning
       true -> :info
     end
   end

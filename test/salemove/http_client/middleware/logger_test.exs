@@ -8,7 +8,7 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
       Salemove.HttpClient.Middleware.Logger,
       level: %{
         422 => :info,
-        (410..418) => :warn
+        (410..418) => :warning
       }
     )
 
