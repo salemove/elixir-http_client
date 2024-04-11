@@ -5,6 +5,9 @@
 * Enhancements
   * All retry attempts are now recorded separately by `Telemetry` and
     `OpenTelemetry` middlewares.
+  * Base URL is now included in the URL provided to  `Telemetry`,
+    `OpenTelemetry`, and `StatsD` middlewares regardless of whether the request
+    was successful or not. Previously was only included on successful requests.
 
 ## v3.0.0
 * Breaking changes
