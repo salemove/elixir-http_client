@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+* Enhancements
+  * All retry attempts are now recorded separately by `Telemetry` and
+    `OpenTelemetry` middlewares.
+
 ## v3.0.0
 * Breaking changes
     * Stopped support for Elixir 1.12.

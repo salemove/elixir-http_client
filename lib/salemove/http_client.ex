@@ -126,9 +126,11 @@ defmodule Salemove.HttpClient do
 
     []
     |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)
+    # Retry has to come before observability middlewares for all attempts to be
+    # recorded separately.
+    |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware(Tesla.Middleware.Telemetry)
     |> push_middleware(Tesla.Middleware.OpenTelemetry, if: opentelemetry_enabled?(options))
-    |> push_middleware({Tesla.Middleware.Retry, options[:retry]}, if: options[:retry])
     |> push_middleware({Tesla.StatsD, options[:stats]}, if: stats_enabled)
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
     # proxy middleware must be after the BaseUrl one, because it requires a full URL
