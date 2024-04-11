@@ -50,7 +50,7 @@ defmodule Salemove.HttpClient.Middleware.Proxy do
         adapter_options ++ proxy_options
       end)
 
-    %{env | opts: new_options}
+    %{env | opts: Keyword.merge(env.opts, new_options)}
   end
 
   defp adapter_options(opts) do
@@ -58,7 +58,7 @@ defmodule Salemove.HttpClient.Middleware.Proxy do
   end
 
   defp inject_adapter(env, opts) do
-    %{env | opts: adapter_options(opts)}
+    %{env | opts: Keyword.merge(env.opts, adapter_options(opts))}
   end
 
   defp check_no_proxy(nil, _) do

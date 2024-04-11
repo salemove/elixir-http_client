@@ -14,6 +14,7 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
   setup do
     allow_http_request(fn env ->
       env
+      |> Tesla.put_opt(:test_opt, "test_value")
       |> status(200)
       |> json(%{})
     end)
@@ -47,6 +48,13 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
 
       assert env.opts[:__adapter_options][:proxy] == "http://127.0.0.1:3128/"
     end
+
+    test "does not overwrite KeepRequest opts" do
+      {:ok, _} = ProxyClient.get("/test")
+      assert_requested(env)
+
+      assert env.opts[:req_url] == "http://test-api/test"
+    end
   end
 
   describe "when client disabled proxy on module level" do
@@ -63,6 +71,13 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
 
       assert env.opts[:__adapter] == Tesla.Mock
       assert env.opts[:__adapter_options] == @default_adapter_options
+    end
+
+    test "does not overwrite KeepRequest opts" do
+      {:ok, _} = NoProxyClient.get("/test")
+      assert_requested(env)
+
+      assert env.opts[:req_url] == "http://test-api/test"
     end
 
     test "does not send request through proxy" do
@@ -111,6 +126,11 @@ defmodule Salemove.HttpClient.Middleware.ProxyTest do
 
       env = get("http://example.com/test")
       assert env.opts[:__adapter_options][:proxy] == @http_proxy
+    end
+
+    test "does not overwrite KeepRequest opts" do
+      env = get("/test")
+      assert env.opts[:req_url] == "http://test-api/test"
     end
 
     defp get(url) do

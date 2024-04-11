@@ -132,9 +132,11 @@ defmodule Salemove.HttpClient do
     # BaseUrl has to come before observability and proxy middlewares. This
     # allows them to work with the full URL.
     |> push_middleware({Tesla.Middleware.BaseUrl, Keyword.fetch!(options, :base_url)})
+    |> push_middleware(Tesla.Middleware.KeepRequest)
     |> push_middleware(Tesla.Middleware.Telemetry)
     |> push_middleware(Tesla.Middleware.OpenTelemetry, if: opentelemetry_enabled?(options))
     |> push_middleware({Tesla.StatsD, options[:stats]}, if: stats_enabled)
+    |> push_middleware(Tesla.Middleware.PathParams)
     |> push_middleware({Salemove.HttpClient.Middleware.Proxy, options})
     |> push_middleware(Tesla.Middleware.FormUrlencoded, if: !encode_json_enabled)
     |> push_middleware({Tesla.Middleware.EncodeJson, options[:json]}, if: encode_json_enabled)
