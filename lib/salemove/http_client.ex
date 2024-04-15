@@ -122,7 +122,7 @@ defmodule Salemove.HttpClient do
 
   defp build_stack(options) do
     encode_json_enabled = Keyword.get(options, :json, true)
-    stats_enabled = Keyword.get(options, :stats, true)
+    stats_enabled = Keyword.get(options, :stats, false)
 
     []
     |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)

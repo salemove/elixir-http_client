@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+* Breaking changes
+  * Disabled `StatsD` integration by default. It can still be enabled and
+    configured via the `stats` configuration field as previously.
 
 * Enhancements
   * All retry attempts are now recorded separately by `Telemetry` and
