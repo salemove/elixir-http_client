@@ -83,7 +83,6 @@ defmodule Salemove.HttpClient do
     ],
     retry: false
   ]
-  @application_defaults Keyword.merge(@hardcoded_defaults, Application.get_all_env(:salemove_http_client) || [])
 
   use Tesla,
     # don't generate GET/POST/... functions for HttpClient module
@@ -113,7 +112,9 @@ defmodule Salemove.HttpClient do
   end
 
   defp build_client(options) do
-    @application_defaults
+    application_defaults = Keyword.merge(@hardcoded_defaults, Application.get_all_env(:salemove_http_client) || [])
+
+    application_defaults
     |> Keyword.merge(options, &deep_merge/3)
     |> Confex.Resolver.resolve!()
     |> build_stack()
