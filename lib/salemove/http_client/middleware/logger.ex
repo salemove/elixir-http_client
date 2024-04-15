@@ -90,6 +90,11 @@ defmodule Salemove.HttpClient.Middleware.Logger do
 
   defp normalize_status(status), do: to_string(status)
 
+  defp extract_path(%{url: url} = _env) do
+    %URI{path: path} = URI.parse(url)
+    path
+  end
+
   defp elapsed_ms(from) do
     now = System.monotonic_time()
     us = System.convert_time_unit(now - from, :native, :microsecond)
@@ -129,6 +134,6 @@ defmodule Salemove.HttpClient.Middleware.Logger do
   end
 
   defp metadata(env, elapsed_ms) do
-    [method: normalize_method(env), path: env.url, duration_ms: to_string(elapsed_ms)]
+    [method: normalize_method(env), path: extract_path(env), duration_ms: to_string(elapsed_ms), url: env.url]
   end
 end

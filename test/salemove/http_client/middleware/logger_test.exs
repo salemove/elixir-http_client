@@ -4,6 +4,10 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   defmodule Client do
     use Tesla
 
+    @base_url "https://base.url"
+
+    plug(Tesla.Middleware.BaseUrl, @base_url)
+
     plug(
       Salemove.HttpClient.Middleware.Logger,
       level: %{
@@ -14,37 +18,37 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
 
     adapter fn env ->
       case env.url do
-        "/connection-error" ->
+        "#{@base_url}/connection-error" ->
           {:error, %Tesla.Error{env: env, reason: :econnrefused}}
 
-        "/timeout" ->
+        "#{@base_url}/timeout" ->
           {:error, :timeout}
 
-        "/closed" ->
+        "#{@base_url}/closed" ->
           {:error, :closed}
 
-        "/unexpected-error" ->
+        "#{@base_url}/unexpected-error" ->
           {:error, "unexpected error"}
 
         _ ->
           {status, body} =
             case env.url do
-              "/server-error" ->
+              "#{@base_url}/server-error" ->
                 {500, "error"}
 
-              "/client-error" ->
+              "#{@base_url}/client-error" ->
                 {404, "error"}
 
-              "/teapot" ->
+              "#{@base_url}/teapot" ->
                 {418, "i am a teapot"}
 
-              "/unprocessable-entity" ->
+              "#{@base_url}/unprocessable-entity" ->
                 {422, "error"}
 
-              "/redirect" ->
+              "#{@base_url}/redirect" ->
                 {301, "moved"}
 
-              "/ok" ->
+              "#{@base_url}/ok" ->
                 {200, "ok"}
             end
 
@@ -66,7 +70,7 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   end
 
   @format "[$level] $message $metadata\n"
-  @metadata [:method, :path, :duration_ms, :status]
+  @metadata [:method, :path, :duration_ms, :status, :url]
 
   @logger_opts [format: @format, metadata: @metadata]
 
@@ -137,6 +141,7 @@ defmodule Salemove.HttpClient.Middleware.LoggerTest do
   test "metadata is included in the log" do
     log = capture_log(@logger_opts, fn -> Client.get("/ok") end)
 
+    assert log =~ ~r/url=https:\/\/base.url\/ok/
     assert log =~ ~r/path=\/ok/
     assert log =~ ~r/status=200/
     assert log =~ ~r/method=GET/

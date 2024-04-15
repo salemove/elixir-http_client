@@ -10,6 +10,9 @@
     was successful or not. Previously was only included on successful requests.
   * Added support for `PathParams` middleware. The URL with unresolved path
     parameters is available to observability middlewares via `env.opts[:req_url]`.
+  * Added `url` field to logger, which includes the full URL of the request.
+    The existing `path` field was changed to include the _path_ of the URL, not
+    the full URL.
 
 ## v3.0.0
 * Breaking changes
