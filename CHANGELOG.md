@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v4.0.0
 * Breaking changes
   * Disabled `StatsD` integration by default. It can still be enabled and
     configured via the `stats` configuration field as previously.
