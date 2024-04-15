@@ -1,5 +1,22 @@
 # Changelog
 
+## v4.0.0
+* Breaking changes
+  * Disabled `StatsD` integration by default. It can still be enabled and
+    configured via the `stats` configuration field as previously.
+
+* Enhancements
+  * All retry attempts are now recorded separately by `Telemetry` and
+    `OpenTelemetry` middlewares.
+  * Base URL is now included in the URL provided to  `Telemetry`,
+    `OpenTelemetry`, and `StatsD` middlewares regardless of whether the request
+    was successful or not. Previously was only included on successful requests.
+  * Added support for `PathParams` middleware. The URL with unresolved path
+    parameters is available to observability middlewares via `env.opts[:req_url]`.
+  * Added `url` field to logger, which includes the full URL of the request.
+    The existing `path` field was changed to include the _path_ of the URL, not
+    the full URL.
+
 ## v3.0.0
 * Breaking changes
     * Stopped support for Elixir 1.12.
