@@ -63,26 +63,28 @@ defmodule Salemove.HttpClient do
       @type options :: HttpClient.options()
       @type response :: HttpClient.response()
 
+      @salemove_http_client_defaults [
+                                       adapter: Tesla.Adapter.Hackney,
+                                       adapter_options: [
+                                         connect_timeout: 1500,
+                                         recv_timeout: 4500
+                                       ],
+                                       retry: false
+                                     ]
+                                     |> HttpClient.merge_options(Application.get_all_env(:salemove_http_client) || [])
+                                     |> HttpClient.merge_options(unquote(defaults_options))
+
       @doc false
       @spec request(options) :: response
       def request(options) do
-        unquote(defaults_options)
-        |> Keyword.merge(options)
+        @salemove_http_client_defaults
+        |> HttpClient.merge_options(options)
         |> HttpClient.perform_request()
       end
 
       unquote(friendly_api)
     end
   end
-
-  @hardcoded_defaults [
-    adapter: Tesla.Adapter.Hackney,
-    adapter_options: [
-      connect_timeout: 1500,
-      recv_timeout: 4500
-    ],
-    retry: false
-  ]
 
   use Tesla,
     # don't generate GET/POST/... functions for HttpClient module
@@ -112,13 +114,16 @@ defmodule Salemove.HttpClient do
   end
 
   defp build_client(options) do
-    application_defaults = Keyword.merge(@hardcoded_defaults, Application.get_all_env(:salemove_http_client) || [])
-
-    application_defaults
-    |> Keyword.merge(options, &deep_merge/3)
+    options
     |> Confex.Resolver.resolve!()
     |> build_stack()
     |> Tesla.client()
+  end
+
+  @doc false
+  @spec merge_options(a :: keyword(), b :: keyword()) :: keyword()
+  def merge_options(a, b) do
+    Keyword.merge(a, b, &deep_merge/3)
   end
 
   defp build_stack(options) do
