@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.0.0
+* Breaking changes
+  * `tesla_statsd` is now an optional dependency. If you want to use the StatsD
+    integration, then you need to add `tesla_statsd` to your application
+    dependencies in `mix.exs` and enable it via the `stats` configuration
+    field.
+
 ## v4.0.0
 * Breaking changes
   * Disabled `StatsD` integration by default. It can still be enabled and
