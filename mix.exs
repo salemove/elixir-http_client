@@ -4,7 +4,7 @@ defmodule Salemove.HttpClient.Mixfile do
   def project do
     [
       app: :salemove_http_client,
-      version: "4.0.0",
+      version: "5.0.0",
       elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -51,7 +51,7 @@ defmodule Salemove.HttpClient.Mixfile do
   defp deps do
     [
       {:tesla, "~> 1.4"},
-      {:tesla_statsd, "~> 0.4.0"},
+      {:tesla_statsd, "~> 0.4.0", optional: true},
       {:confex, "~> 3.0"},
       {:telemetry, "~> 0.4 or ~> 1.0"},
       {:opentelemetry_tesla, "~> 2.0", optional: true},

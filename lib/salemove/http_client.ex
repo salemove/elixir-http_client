@@ -25,7 +25,9 @@ defmodule Salemove.HttpClient do
     * `:json` - JSON encoding/decoding options. If omitted, default options are used - see `Tesla.Middleware.JSON`.
       If set to `false`, request body is sent as application/x-www-form-urlencoded not JSON.
     * `:retry` - Retry few times in case of connection refused error. See `Tesla.Middleware.Retry`.
-    * `:stats` - StatsD instrumenting options. See `Tesla.StatsD` for more details.
+    * `:stats` - StatsD instrumenting options. The `:tesla_statsd` dependency
+      must be included in your service to use this option. See `Tesla.StatsD`
+      for more details.
     * `:username` - along with `:password` option adds basic authentication to all requests.
       See `Tesla.Middleware.BasicAuth`.
     * `:password` - see `:username`.
@@ -122,7 +124,9 @@ defmodule Salemove.HttpClient do
 
   defp build_stack(options) do
     encode_json_enabled = Keyword.get(options, :json, true)
+
     stats_enabled = Keyword.get(options, :stats, false)
+    if stats_enabled, do: Code.ensure_loaded!(Tesla.StatsD)
 
     []
     |> push_middleware(Salemove.HttpClient.Middleware.MapHeaders)
